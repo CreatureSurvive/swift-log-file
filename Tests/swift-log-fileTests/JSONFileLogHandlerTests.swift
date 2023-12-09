@@ -119,6 +119,47 @@ final class JSONFileLogHandlerTests: XCTestCase, Utilities {
         let logFile = try LogFile(url: logFileURL)
         debugPrint(logFile.json)
     }
+    
+    func testClearLog() throws {
+        let logFileURL = try getDocumentsDirectory().appendingPathComponent(logFileName)
+        let fileLogger = try JSONFileLogging(to: logFileURL)
+        
+        let logger = Logger(label: "Test", factory: fileLogger.handler)
+        
+        logger.error("Test Test Test")
+        logger.error("Test Test Test")
+        
+        var stream = fileLogger.stream
+        stream.clear()
+        
+        let fileSize = try getFileSize(file: logFileURL)
+        
+        XCTAssert(fileSize == 0, "filesize: \(fileSize)")
+    }
+    
+    func testLogTruncate() throws {
+        let logFileURL = try getDocumentsDirectory().appendingPathComponent(logFileName)
+        let fileLogger = try JSONFileLogging(to: logFileURL, maxEntries: 5)
+        
+        let logger = Logger(label: "Test", factory: fileLogger.handler)
+        
+        logger.error("Test Test Test 1")
+        logger.error("Test Test Test 2")
+        logger.error("Test Test Test 3")
+        logger.error("Test Test Test 4")
+        logger.error("Test Test Test 5")
+        logger.error("Test Test Test 6")
+        
+        var stream = fileLogger.stream
+        try stream.truncate()
+        
+        let string = try String(contentsOf: logFileURL)
+        // subtract 1 so as not to count the trailing newline
+        let lines = string.components(separatedBy: "\n").count - 1
+        print(string)
+        
+        XCTAssert(lines == 5)
+    }
 }
 
 private extension Encodable {

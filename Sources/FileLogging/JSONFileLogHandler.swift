@@ -9,11 +9,11 @@ import Logging
 import Foundation
 
 public struct JSONFileLogging {
-    let stream: TextOutputStream
+    public let stream: FileHandlerOutputStream
     private var localFile: URL
     
-    public init(to localFile: URL) throws {
-        self.stream = try FileHandlerOutputStream(localFile: localFile)
+    public init(to localFile: URL, maxEntries: Int = 2000) throws {
+        self.stream = try FileHandlerOutputStream(localFile: localFile, maxEntries: maxEntries)
         self.localFile = localFile
     }
     
@@ -21,8 +21,8 @@ public struct JSONFileLogging {
         return JSONFileLogHandler(label: label, fileLogger: self)
     }
     
-    public static func logger(label: String, localFile url: URL) throws -> Logger {
-        let logging = try JSONFileLogging(to: url)
+    public static func logger(label: String, localFile url: URL, maxEntries: Int = 2000) throws -> Logger {
+        let logging = try JSONFileLogging(to: url, maxEntries: maxEntries)
         return Logger(label: label, factory: logging.handler)
     }
 }
@@ -32,7 +32,7 @@ public struct JSONFileLogging {
 /// `FileLogHandler` is a simple implementation of `LogHandler` for directing
 /// `Logger` output to a local file. Appends log output to this file, even across constructor calls.
 public struct JSONFileLogHandler: LogHandler {
-    private let stream: TextOutputStream
+    private let stream: FileHandlerOutputStream
     private var label: String
     
     public var logLevel: Logger.Level = .info
@@ -58,9 +58,9 @@ public struct JSONFileLogHandler: LogHandler {
         self.stream = fileLogger.stream
     }
 
-    public init(label: String, localFile url: URL) throws {
+    public init(label: String, localFile url: URL, maxEntries: Int = 2000) throws {
         self.label = label
-        self.stream = try FileHandlerOutputStream(localFile: url)
+        self.stream = try FileHandlerOutputStream(localFile: url, maxEntries: maxEntries)
     }
 
     public func log(level: Logger.Level,
@@ -114,7 +114,7 @@ public struct LogFile: Codable {
     }
 }
 
-private extension TextOutputStream {
+private extension FileHandlerOutputStream {
     mutating func write(_ log: LogFile.Log) {
         if let data = try? encoder.encode(log),
            let string = String(data: data, encoding: .utf8) {
