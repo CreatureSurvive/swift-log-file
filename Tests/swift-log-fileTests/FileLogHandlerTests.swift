@@ -2,7 +2,7 @@ import XCTest
 @testable import FileLogging
 @testable import Logging
 
-final class swift_log_fileTests: XCTestCase, Utilities {
+final class FileLogHandlerTests: XCTestCase, Utilities {
     let logFileName = "LogFile.txt"
     
     func testLogToFileUsingBootstrap() throws {
@@ -17,7 +17,7 @@ final class swift_log_fileTests: XCTestCase, Utilities {
         // Not really an error.
         logger.error("Test Test Test")
         
-        try? FileManager.default.removeItem(at: logFileURL)
+//        try? FileManager.default.removeItem(at: logFileURL)
     }
     
     func testLogToFileAppendsAcrossLoggerCalls() throws {
@@ -36,7 +36,7 @@ final class swift_log_fileTests: XCTestCase, Utilities {
         let fileSize2 = try getFileSize(file: logFileURL)
         
         XCTAssert(fileSize2 > fileSize1)
-        try? FileManager.default.removeItem(at: logFileURL)
+//        try? FileManager.default.removeItem(at: logFileURL)
     }
     
     func testLogToFileAppendsAcrossConstructorCalls() throws {
@@ -53,7 +53,7 @@ final class swift_log_fileTests: XCTestCase, Utilities {
         let fileSize2 = try getFileSize(file: logFileURL)
         
         XCTAssert(fileSize2 > fileSize1)
-        try? FileManager.default.removeItem(at: logFileURL)
+//        try? FileManager.default.removeItem(at: logFileURL)
     }
     
     // Adapted from https://nshipster.com/swift-log/
@@ -74,7 +74,7 @@ final class swift_log_fileTests: XCTestCase, Utilities {
         
         // TODO: Manually check that the output also shows up in the Xcode console.
         logger.error("Test Test Test")
-        try? FileManager.default.removeItem(at: logFileURL)
+//        try? FileManager.default.removeItem(at: logFileURL)
     }
     
     func testLoggingUsingLoggerFactoryConstructor() throws {
@@ -90,7 +90,7 @@ final class swift_log_fileTests: XCTestCase, Utilities {
         let fileSize2 = try getFileSize(file: logFileURL)
         
         XCTAssert(fileSize2 > fileSize1)
-        try? FileManager.default.removeItem(at: logFileURL)
+//        try? FileManager.default.removeItem(at: logFileURL)
     }
     
     func testLoggingUsingConvenienceMethod() throws {
@@ -105,6 +105,6 @@ final class swift_log_fileTests: XCTestCase, Utilities {
         let fileSize2 = try getFileSize(file: logFileURL)
         
         XCTAssert(fileSize2 > fileSize1)
-        try? FileManager.default.removeItem(at: logFileURL)
+//        try? FileManager.default.removeItem(at: logFileURL)
     }
 }
